@@ -22,7 +22,7 @@ final class Version20210724120516 extends AbstractMigration
         $this->addSql('
             CREATE TABLE sport (
                 id INT AUTO_INCREMENT NOT NULL,
-                label VARCHAR(60) NOT NULL,
+                label VARCHAR(60) NOT NULL UNIQUE,
                 created_at DATETIME NOT NULL,
                 updated_at DATETIME DEFAULT NULL,
                 PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB

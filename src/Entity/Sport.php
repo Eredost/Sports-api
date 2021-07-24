@@ -21,7 +21,7 @@ class Sport
     private int $id;
 
     /**
-     * @ORM\Column(type="string", length=60)
+     * @ORM\Column(type="string", length=60, unique=true)
      */
     private string $label;
 
