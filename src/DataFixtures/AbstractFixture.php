@@ -83,4 +83,20 @@ abstract class AbstractFixture extends Fixture
 
         return $this->referencesIndex[$groupName];
     }
+
+    /**
+     * Returns a randomly generated date between two given dates
+     *
+     * @param string $startDate
+     * @param string $endDate
+     *
+     * @return string
+     */
+    protected function randomDateBetween(\DateTimeInterface $startDate, \DateTimeInterface $endDate): \DateTimeInterface
+    {
+        $min = strtotime($startDate->format('Y-m-d'));
+        $max = strtotime($endDate->format('Y-m-d'));
+
+        return new \DateTime(date('Y-m-d H:i:s', random_int($min, $max)));
+    }
 }
