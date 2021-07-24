@@ -1,0 +1,45 @@
+language: php
+dist: xenial
+os: linux
+
+services:
+  - mysql
+
+cache:
+  directories:
+    - $HOME/.composer/cache/files
+    - $HOME/symfony-bridge/.phpunit
+
+env:
+  global:
+    - PHPUNIT_FLAGS="-v"
+
+matrix:
+  fast_finish: true
+  include:
+    - php: 8.0
+      env: COVERAGE=true PHPUNIT_FLAGS="-v --coverage-clover clover.xml"
+
+install:
+  - composer self-update
+  - composer install --prefer-dist --no-interaction
+  # TODO: uncomment the lines below when the entities will be implemented
+  #- echo "DATABASE_URL=mysql://root:@127.0.0.1:3306/sports-api" | tee .env.test.local .env.local
+  #- ./bin/console doctrine:database:create
+  #- ./bin/console doctrine:migrations:migrate --no-interaction
+  #- ./bin/console doctrine:fixtures:load --no-interaction
+
+before_script:
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
+
+script:
+  - composer validate --strict --no-check-lock
+  - ./bin/console lint:yaml config --parse-tags
+  # TODO: uncomment the line below when the entities will be implemented
+  #- ./bin/console doctrine:schema:validate --skip-sync -vvv --no-interaction
+  - ./bin/phpunit $PHPUNIT_FLAGS
+
+after_script:
+  - ./cc-test-reporter after-build -t clover --exit-code $TRAVIS_TEST_RESULT
