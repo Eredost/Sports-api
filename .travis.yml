@@ -35,7 +35,7 @@ before_script:
   - ./cc-test-reporter before-build
 
 script:
-  - composer validate --strict --no-check-lock
+  - composer validate --no-check-lock
   - php bin/console lint:yaml config --parse-tags
   # TODO: uncomment the line below when the entities will be implemented
   #- php bin/console doctrine:schema:validate --skip-sync -vvv --no-interaction
