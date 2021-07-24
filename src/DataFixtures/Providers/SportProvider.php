@@ -11,7 +11,6 @@ class SportProvider
      */
     private const SPORTS = [
         'Parkour',
-        'Trampolining',
         'Aerobatics',
         'Parachuting',
         'Paragliding',
@@ -36,7 +35,6 @@ class SportProvider
         'Football',
         'Golf',
         'Acrobatic gymnastics',
-        'Parkour',
         'Trampolining',
         'Kitesurfing',
         'Triathlon',
