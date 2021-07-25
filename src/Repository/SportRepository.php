@@ -15,7 +15,7 @@ class SportRepository extends ServiceEntityRepository
 
     public function getSports(int $offset, int $limit, string $order, string $term = null)
     {
-        $qb = $this->createQueryBuilder('s')
+        $queryBuilder = $this->createQueryBuilder('s')
             ->select('s')
             ->orderBy('s.label', $order)
             ->setMaxResults($limit)
@@ -23,12 +23,12 @@ class SportRepository extends ServiceEntityRepository
         ;
 
         if ($term) {
-            $qb->andWhere('s.label LIKE ?1')
+            $queryBuilder->andWhere('s.label LIKE ?1')
                 ->setParameter(1, '%' . $term . '%')
             ;
         }
 
-        return $qb->getQuery()
+        return $queryBuilder->getQuery()
             ->getResult()
         ;
     }

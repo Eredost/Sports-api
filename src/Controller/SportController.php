@@ -148,7 +148,8 @@ class SportController extends AbstractController
                 'location' => $this->generateUrl(
                     'api_sport_show',
                     ['id' => $sport->getId()],
-                    UrlGeneratorInterface::ABSOLUTE_URL),
+                    UrlGeneratorInterface::ABSOLUTE_URL
+                ),
                 'Content-Type' => 'application/json',
             ]
         );
