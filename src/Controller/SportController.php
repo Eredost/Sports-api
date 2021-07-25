@@ -73,8 +73,34 @@ class SportController extends AbstractController
      *     requirements={"id"="\d+"},
      *     methods={"PUT"})
      */
-    public function edit()
+    public function edit(Request $request, SerializerInterface $serializer, Sport $sport = null): Response
     {
+        if (!$sport) {
+            throw new NotFoundHttpException('The sport you are looking for does not exist');
+        }
+
+        try {
+            $body = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            throw new BadRequestHttpException('Invalid JSON in request body');
+        }
+
+        $sportForm = $this->createForm(SportType::class, $sport);
+        $sportForm->submit($body);
+
+        if (!$sportForm->isValid()) {
+            throw new ResourceValidationException($sportForm->getErrors(true));
+        }
+
+        $sport->setUpdatedAt(new \DateTime());
+        $manager = $this->getDoctrine()->getManager();
+        $manager->flush();
+
+        return new Response(
+            $serializer->serialize($sport, 'json'),
+            Response::HTTP_OK,
+            ['Content-Type' => 'application/json']
+        );
     }
 
     /**
@@ -83,7 +109,7 @@ class SportController extends AbstractController
      *     requirements={"id"="\d+"},
      *     methods={"POST"})
      */
-    public function create(Request $request, EntityManagerInterface $manager, SerializerInterface $serializer): Response
+    public function create(Request $request, SerializerInterface $serializer): Response
     {
         try {
             $body = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
@@ -100,6 +126,7 @@ class SportController extends AbstractController
         }
 
         $sport->setCreatedAt(new \DateTime());
+        $manager = $this->getDoctrine()->getManager();
         $manager->persist($sport);
         $manager->flush();
 
