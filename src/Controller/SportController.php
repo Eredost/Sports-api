@@ -122,7 +122,19 @@ class SportController extends AbstractController
      *     requirements={"id"="\d+"},
      *     methods={"DELETE"})
      */
-    public function delete()
+    public function delete(EntityManagerInterface $manager, Sport $sport = null): Response
     {
+        if (!$sport) {
+            throw new NotFoundHttpException('The sport you are looking for does not exist');
+        }
+
+        $manager->remove($sport);
+        $manager->flush();
+
+        return new Response(
+            '',
+            Response::HTTP_NO_CONTENT,
+            ['Content-Type' => 'application/json']
+        );
     }
 }
