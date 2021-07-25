@@ -12,4 +12,24 @@ class SportRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Sport::class);
     }
+
+    public function getSports(int $offset, int $limit, string $order, string $term = null)
+    {
+        $qb = $this->createQueryBuilder('s')
+            ->select('s')
+            ->orderBy('s.label', $order)
+            ->setMaxResults($limit)
+            ->setFirstResult($offset)
+        ;
+
+        if ($term) {
+            $qb->andWhere('s.label LIKE ?1')
+                ->setParameter(1, '%' . $term . '%')
+            ;
+        }
+
+        return $qb->getQuery()
+            ->getResult()
+        ;
+    }
 }
