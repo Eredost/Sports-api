@@ -3,13 +3,17 @@
 namespace App\Controller;
 
 use App\Entity\Sport;
+use App\Exception\ResourceValidationException;
+use App\Form\SportType;
 use App\Repository\SportRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 
 /**
@@ -18,7 +22,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 class SportController extends AbstractController
 {
     /**
-     * @Route("/",
+     * @Route(
      *     name="api_sport_list",
      *     methods={"GET"})
      */
@@ -74,13 +78,42 @@ class SportController extends AbstractController
     }
 
     /**
-     * @Route("/",
+     * @Route(
      *     name="api_sport_create",
      *     requirements={"id"="\d+"},
      *     methods={"POST"})
      */
-    public function create()
+    public function create(Request $request, EntityManagerInterface $manager, SerializerInterface $serializer): Response
     {
+        try {
+            $body = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            throw new BadRequestHttpException('Invalid JSON in request body');
+        }
+
+        $sport = new Sport();
+        $sportForm = $this->createForm(SportType::class, $sport);
+        $sportForm->submit($body);
+
+        if (!$sportForm->isValid()) {
+            throw new ResourceValidationException($sportForm->getErrors(true));
+        }
+
+        $sport->setCreatedAt(new \DateTime());
+        $manager->persist($sport);
+        $manager->flush();
+
+        return new Response(
+            $serializer->serialize($sport, 'json'),
+            Response::HTTP_CREATED,
+            [
+                'location' => $this->generateUrl(
+                    'api_sport_show',
+                    ['id' => $sport->getId()],
+                    UrlGeneratorInterface::ABSOLUTE_URL),
+                'Content-Type' => 'application/json',
+            ]
+        );
     }
 
     /**

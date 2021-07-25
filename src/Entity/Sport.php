@@ -5,10 +5,16 @@ namespace App\Entity;
 use App\Entity\Traits\TimestampableTrait;
 use App\Repository\SportRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=SportRepository::class)
+ * @UniqueEntity(
+ *     fields = "label",
+ *     message = "This label is already used"
+ * )
  */
 class Sport
 {
@@ -25,8 +31,21 @@ class Sport
     /**
      * @ORM\Column(type="string", length=60, unique=true)
      * @Groups({"read"})
+     *
+     * @Assert\NotBlank(
+     *     message = "The label cannot be blank"
+     * )
+     * @Assert\Length(
+     *     max = 60,
+     *     maxMessage = "The label length cannot exceed 60 characters"
+     * )
      */
     private string $label;
+
+    public function __construct()
+    {
+        $this->createdAt = new \DateTime();
+    }
 
     /**
      * @return int|null
