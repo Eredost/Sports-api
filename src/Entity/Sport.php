@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Entity\Traits\TimestampableTrait;
 use App\Repository\SportRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=SportRepository::class)
@@ -17,11 +18,13 @@ class Sport
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Groups({"read"})
      */
     private int $id;
 
     /**
      * @ORM\Column(type="string", length=60, unique=true)
+     * @Groups({"read", "write"})
      */
     private string $label;
 
