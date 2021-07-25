@@ -37,7 +37,7 @@ class Sport
      * )
      * @Assert\Length(
      *     max = 60,
-     *     maxMessage = "The label length cannot exceed 60 characters"
+     *     maxMessage = "The label length cannot exceed {{ limit }} characters"
      * )
      */
     private string $label;
@@ -48,17 +48,17 @@ class Sport
     }
 
     /**
-     * @return int|null
+     * @return int
      */
-    public function getId(): ?int
+    public function getId(): int
     {
         return $this->id;
     }
 
     /**
-     * @return string|null
+     * @return string
      */
-    public function getLabel(): ?string
+    public function getLabel(): string
     {
         return $this->label;
     }
