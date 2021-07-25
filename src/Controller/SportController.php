@@ -17,13 +17,14 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 
 /**
- * @Route("/api/sports")
+ * @Route("/api/sports",
+ *     name="api_sport_")
  */
 class SportController extends AbstractController
 {
     /**
      * @Route(
-     *     name="api_sport_list",
+     *     name="list",
      *     methods={"GET"})
      */
     public function list(SportRepository $repository, SerializerInterface $serializer, Request $request): Response
@@ -55,7 +56,7 @@ class SportController extends AbstractController
 
     /**
      * @Route("/{id}",
-     *     name="api_sport_show",
+     *     name="show",
      *     requirements={"id"="\d+"},
      *     methods={"GET"})
      */
@@ -80,7 +81,7 @@ class SportController extends AbstractController
 
     /**
      * @Route("/{id}",
-     *     name="api_sport_edit",
+     *     name="edit",
      *     requirements={"id"="\d+"},
      *     methods={"PUT"})
      */
@@ -116,7 +117,7 @@ class SportController extends AbstractController
 
     /**
      * @Route(
-     *     name="api_sport_create",
+     *     name="create",
      *     requirements={"id"="\d+"},
      *     methods={"POST"})
      */
@@ -157,7 +158,7 @@ class SportController extends AbstractController
 
     /**
      * @Route("/{id}",
-     *     name="api_sport_delete",
+     *     name="delete",
      *     requirements={"id"="\d+"},
      *     methods={"DELETE"})
      */
