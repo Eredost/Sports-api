@@ -4,16 +4,19 @@ namespace App\Entity\Traits;
 
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 trait TimestampableTrait
 {
     /**
      * @ORM\Column(type="datetime")
+     * @Groups({"read"})
      */
     private DateTimeInterface $createdAt;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
+     * @Groups({"read"})
      */
     private ?DateTimeInterface $updatedAt = null;
 
