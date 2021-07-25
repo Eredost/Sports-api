@@ -4,6 +4,7 @@ namespace App\EventListener;
 
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 
 class ExceptionListener
@@ -18,17 +19,21 @@ class ExceptionListener
     public function onKernelException(ExceptionEvent $event): void
     {
         $exception = $event->getThrowable();
-        $statusCode = $exception->getStatusCode();
+        $response = new Response();
+
+        if ($exception instanceof HttpExceptionInterface) {
+            $response->setStatusCode($exception->getStatusCode());
+            $response->headers->replace($exception->getHeaders());
+        } else {
+            $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
         $content = [
-            "code"    => $statusCode,
+            "code"    => $response->getStatusCode(),
             "message" => $exception->getMessage(),
         ];
-
-        $response = new Response(
-            $this->serializer->serialize($content, 'json'),
-            $statusCode,
-            ['Content-Type' => 'application/json']
-        );
+        $response->setContent($this->serializer->serialize($content, 'json'));
+        $response->headers->replace(['Content-Type' => 'application/json']);
 
         $event->setResponse($response);
     }
