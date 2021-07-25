@@ -49,6 +49,6 @@ class SportProvider
 
     public static function getSports(): array
     {
-        return static::SPORTS;
+        return self::SPORTS;
     }
 }
