@@ -5,8 +5,10 @@ namespace App\Controller;
 use App\Entity\Sport;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\HttpKernel\EventListener\ErrorListener;
 
 /**
  * @Route("/api/sports")

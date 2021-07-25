@@ -24,7 +24,7 @@ class Sport
 
     /**
      * @ORM\Column(type="string", length=60, unique=true)
-     * @Groups({"read", "write"})
+     * @Groups({"read"})
      */
     private string $label;
 
