@@ -41,11 +41,16 @@ class SportController extends AbstractController
 
         $sports = $repository->getSports($offset, $limit, $order, $term);
 
-        return new Response(
+        $response = new Response(
             $serializer->serialize($sports, 'json', ['groups' => 'read']),
             Response::HTTP_OK,
             ['Content-Type' => 'application/json']
         );
+
+        return $response->setPublic()
+            ->setExpires(new \DateTime('+3 minutes'))
+            ->setEtag('Sports_' . $offset . $limit . $order . $term)
+        ;
     }
 
     /**
@@ -60,11 +65,17 @@ class SportController extends AbstractController
             throw new NotFoundHttpException('The sport you are looking for does not exist');
         }
 
-        return new Response(
+        $response = new Response(
             $serializer->serialize($sport, 'json', ['groups' => 'read']),
             Response::HTTP_OK,
             ['Content-Type' => 'application/json']
         );
+
+        return $response->setPublic()
+            ->setExpires(new \DateTime('+1 hour'))
+            ->setLastModified($sport->getUpdatedAt())
+            ->setEtag('Sport_' . $sport->getId() . $sport->getUpdatedAt()?->getTimestamp())
+        ;
     }
 
     /**
