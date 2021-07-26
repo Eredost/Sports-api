@@ -36,10 +36,10 @@ installed on your machine.
    ```shell
    # Create the tables in the database
    php bin/console doctrine:migrations:migrate
-   
+
    # Generate the fake data set
    php bin/console doctrine:fixtures:load
-   
+
    # Generate keypair using OpenSSL
    php bin/console lexik:jwt:generate-keypair
    ```
@@ -47,4 +47,6 @@ installed on your machine.
 When the 'symfony' container is launched, **port 8080** is listening
 and allows you to access the API.
 
-HTML documentation is available at the route '/api/doc'.
+HTML documentation is available at the route '/api/doc', and the
+credentials of the generated users can be found in the file
+`src/DataFixtures/Providers/UserProvider.php`.
