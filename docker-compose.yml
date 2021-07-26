@@ -1,0 +1,38 @@
+version: "3.9"
+
+services:
+  database:
+    container_name: database
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: sports-api
+      MYSQL_USER: sports-api
+      MYSQL_PASSWORD: sports-api
+    volumes:
+    - ./docker/mysql:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin
+    container_name: phpmyadmin
+    restart: always
+    depends_on:
+      - database
+    ports:
+      - 8081:80
+    environment:
+      PMA_HOST: database
+
+  symfony:
+    build:
+      context: ./
+      dockerfile: ./docker/php/Dockerfile
+    container_name: symfony
+    depends_on:
+      - database
+    ports:
+      - 8080:80
+    volumes:
+      - ./docker/php/vhosts:/etc/apache2/sites-enabled
+      - ./:/var/www/sports-api
