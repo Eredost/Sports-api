@@ -7,6 +7,7 @@ use App\Exception\ResourceValidationException;
 use App\Form\SportType;
 use App\Repository\SportRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Nelmio\ApiDocBundle\Annotation\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,10 +16,23 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\SerializerInterface;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use OpenApi\Annotations as OA;
 
 /**
  * @Route("/api/sports",
  *     name="api_sport_")
+ *
+ * @OA\Response(
+ *     response = 405,
+ *     description = "Method not allowed"
+ * )
+ * @OA\Response(
+ *     response = 401,
+ *     description = "Invalid, not found or expired JWT token"
+ * )
+ * @OA\Tag(name="Sport")
+ * @Security(name="Bearer")
  */
 class SportController extends AbstractController
 {
@@ -26,6 +40,52 @@ class SportController extends AbstractController
      * @Route(
      *     name="list",
      *     methods={"GET"})
+     *
+     * @OA\Parameter(
+     *     name = "offset",
+     *     in = "query",
+     *     description = "The pagination offset",
+     *     allowEmptyValue = true,
+     *     required = false,
+     *     @OA\Schema(type="int")
+     * )
+     * @OA\Parameter(
+     *     name = "limit",
+     *     in = "query",
+     *     description = "Max number of sports per page",
+     *     allowEmptyValue = true,
+     *     required = false,
+     *     @OA\Schema(type="int")
+     * )
+     * @OA\Parameter(
+     *     name = "limit",
+     *     in = "query",
+     *     description = "Max number of sports per page",
+     *     allowEmptyValue = true,
+     *     required = false,
+     *     @OA\Schema(type="int")
+     * )
+     * @OA\Parameter(
+     *     name = "order",
+     *     in = "query",
+     *     description = "Sort order by sport label (asc or desc)",
+     *     allowEmptyValue = true,
+     *     required = false,
+     *     @OA\Schema(type="string")
+     * )
+     * @OA\Parameter(
+     *     name = "keyword",
+     *     in = "query",
+     *     description = "The label name of the sport to be searched",
+     *     allowEmptyValue = true,
+     *     required = false,
+     *     @OA\Schema(type="string")
+     * )
+     * @OA\Response(
+     *     response = 200,
+     *     description = "Returns a list of sports",
+     *     @Model(type=Sport::class, groups={"read"})
+     * )
      */
     public function list(SportRepository $repository, SerializerInterface $serializer, Request $request): Response
     {
@@ -59,6 +119,16 @@ class SportController extends AbstractController
      *     name="show",
      *     requirements={"id"="\d+"},
      *     methods={"GET"})
+     *
+     * @OA\Response(
+     *     response = 200,
+     *     description = "Returns the sport according to his id",
+     *     @Model(type=Sport::class, groups={"read"})
+     * )
+     * @OA\Response(
+     *     response = 404,
+     *     description = "Sport not found"
+     * )
      */
     public function show(SerializerInterface $serializer, Sport $sport = null): Response
     {
@@ -84,6 +154,29 @@ class SportController extends AbstractController
      *     name="edit",
      *     requirements={"id"="\d+"},
      *     methods={"PUT"})
+     *
+     * @OA\RequestBody(
+     *     description = "Sport details",
+     *     @OA\MediaType(
+     *         mediaType = "application/json",
+     *         @OA\Schema(
+     *             @OA\Property(
+     *                 property = "label",
+     *                 description = "The sport label",
+     *                 type = "string"
+     *             )
+     *         )
+     *     )
+     * )
+     * @OA\Response(
+     *     response = 200,
+     *     description = "Returns the modified sport",
+     *     @Model(type=Sport::class, groups={"read"})
+     * )
+     * @OA\Response(
+     *     response = 400,
+     *     description = "Malformed JSON or constraint validation errors"
+     * )
      */
     public function edit(Request $request, SerializerInterface $serializer, Sport $sport = null): Response
     {
@@ -120,6 +213,29 @@ class SportController extends AbstractController
      *     name="create",
      *     requirements={"id"="\d+"},
      *     methods={"POST"})
+     *
+     * @OA\RequestBody(
+     *     description = "Sport details",
+     *     @OA\MediaType(
+     *         mediaType = "application/json",
+     *         @OA\Schema(
+     *             @OA\Property(
+     *                 property = "label",
+     *                 description = "The sport label",
+     *                 type = "string"
+     *             )
+     *         )
+     *     )
+     * )
+     * @OA\Response(
+     *     response = 201,
+     *     description = "Returns the new sport",
+     *     @Model(type=Sport::class, groups={"read"})
+     * )
+     * @OA\Response(
+     *     response = 400,
+     *     description = "Malformed JSON or constraint validation errors"
+     * )
      */
     public function create(Request $request, SerializerInterface $serializer): Response
     {
@@ -161,6 +277,15 @@ class SportController extends AbstractController
      *     name="delete",
      *     requirements={"id"="\d+"},
      *     methods={"DELETE"})
+     *
+     * @OA\Response(
+     *     response = 204,
+     *     description = "No content"
+     * )
+     * @OA\Response(
+     *     response = 404,
+     *     description = "Sport not found"
+     * )
      */
     public function delete(EntityManagerInterface $manager, Sport $sport = null): Response
     {
