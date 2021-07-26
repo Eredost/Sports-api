@@ -8,6 +8,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 use App\Repository\UserRepository;
 use Symfony\Component\Validator\Constraints as Assert;
+use OpenApi\Annotations as OA;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
@@ -43,6 +44,8 @@ class User implements UserInterface
      *     minMessage = "The username should contain at least {{ limit }} characters",
      *     maxMessage = "The username length cannot exceed {{ limit }} characters"
      * )
+     *
+     * @OA\Items(description="The username")
      */
     private string $username;
 
@@ -57,13 +60,28 @@ class User implements UserInterface
      *     @Assert\Choice(
      *         choices = User::ROLES,
      *         message = "You must provid a valid user role. Roles available: {{ choices }}"
+     *     )
      * )
+     *
+     * @OA\Property(
+     *     type = "array",
+     *     description = "The roles of the user giving permissions",
+     *     @OA\Items(
+     *         type = "string",
+     *         title = "role"
+     *     )
      * )
      */
     private array $roles = [];
 
     /**
      * @ORM\Column(type="string")
+     *
+     * @OA\Property(
+     *     type = "string",
+     *     format = "password",
+     *     description = "The hash of the password"
+     * )
      */
     private string $password;
 
@@ -74,6 +92,13 @@ class User implements UserInterface
      * @Assert\Regex(
      *     pattern = "/(?=^.{8,40}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/",
      *     message = "Your password must contain 8-40 characters including one lowercase, one uppercase and one number"
+     * )
+     *
+     * @OA\Property(
+     *     type = "string",
+     *     format = "password",
+     *     nullable = true,
+     *     description = "The plain password"
      * )
      */
     private ?string $plainPassword = null;

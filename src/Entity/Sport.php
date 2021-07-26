@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+use OpenApi\Annotations as OA;
 
 /**
  * @ORM\Entity(repositoryClass=SportRepository::class)
@@ -39,6 +40,8 @@ class Sport
      *     max = 60,
      *     maxMessage = "The label length cannot exceed {{ limit }} characters"
      * )
+     *
+     * @OA\Property(description="The sport label")
      */
     private ?string $label;
 
