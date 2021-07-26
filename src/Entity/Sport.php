@@ -40,7 +40,7 @@ class Sport
      *     maxMessage = "The label length cannot exceed {{ limit }} characters"
      * )
      */
-    private string $label;
+    private ?string $label;
 
     public function __construct()
     {
@@ -64,11 +64,11 @@ class Sport
     }
 
     /**
-     * @param string $label
+     * @param string|null $label
      *
      * @return Sport
      */
-    public function setLabel(string $label): Sport
+    public function setLabel(?string $label): Sport
     {
         $this->label = $label;
 
