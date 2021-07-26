@@ -69,11 +69,9 @@ class User implements UserInterface
 
     /**
      * @Assert\NotBlank(
-     *     groups = {"create"},
      *     message = "The password cannot be blank"
      * )
      * @Assert\Regex(
-     *     groups = {"create"},
      *     pattern = "/(?=^.{8,40}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/",
      *     message = "Your password must contain at least 8 characters and a maximum of 40 characters including one lower case, one upper case and one number"
      * )
