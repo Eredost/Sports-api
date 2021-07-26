@@ -30,6 +30,7 @@
 
         <exclude>
             <file>src/Kernel.php</file>
+            <file>src/CacheKernel.php</file>
         </exclude>
     </coverage>
 
