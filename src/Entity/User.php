@@ -73,7 +73,7 @@ class User implements UserInterface
      * )
      * @Assert\Regex(
      *     pattern = "/(?=^.{8,40}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/",
-     *     message = "Your password must contain at least 8 characters and a maximum of 40 characters including one lower case, one upper case and one number"
+     *     message = "Your password must contain 8-40 characters including one lowercase, one uppercase and one number"
      * )
      */
     private ?string $plainPassword = null;
