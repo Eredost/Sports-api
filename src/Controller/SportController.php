@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Entity\Sport;
 use App\Exception\ResourceValidationException;
 use App\Form\SportType;
-use App\Repository\SportRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Nelmio\ApiDocBundle\Annotation\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -36,84 +35,6 @@ use OpenApi\Annotations as OA;
  */
 class SportController extends AbstractController
 {
-    /**
-     * @Route(
-     *     name="list",
-     *     methods={"GET"})
-     *
-     * @OA\Parameter(
-     *     name = "offset",
-     *     in = "query",
-     *     description = "The pagination offset",
-     *     allowEmptyValue = true,
-     *     required = false,
-     *     @OA\Schema(type="int")
-     * )
-     * @OA\Parameter(
-     *     name = "limit",
-     *     in = "query",
-     *     description = "Max number of sports per page",
-     *     allowEmptyValue = true,
-     *     required = false,
-     *     @OA\Schema(type="int")
-     * )
-     * @OA\Parameter(
-     *     name = "limit",
-     *     in = "query",
-     *     description = "Max number of sports per page",
-     *     allowEmptyValue = true,
-     *     required = false,
-     *     @OA\Schema(type="int")
-     * )
-     * @OA\Parameter(
-     *     name = "order",
-     *     in = "query",
-     *     description = "Sort order by sport label (asc or desc)",
-     *     allowEmptyValue = true,
-     *     required = false,
-     *     @OA\Schema(type="string")
-     * )
-     * @OA\Parameter(
-     *     name = "keyword",
-     *     in = "query",
-     *     description = "The label name of the sport to be searched",
-     *     allowEmptyValue = true,
-     *     required = false,
-     *     @OA\Schema(type="string")
-     * )
-     * @OA\Response(
-     *     response = 200,
-     *     description = "Returns a list of sports",
-     *     @Model(type=Sport::class, groups={"read"})
-     * )
-     */
-    public function list(SportRepository $repository, SerializerInterface $serializer, Request $request): Response
-    {
-        # Pagination parameters
-        $offset = (int) $request->get('offset', 0);
-        $offset = (!is_int($offset) || $offset < 0 ? 0 : $offset);
-        $limit = (int) $request->get('limit', 10);
-        $limit = (!is_int($limit) || $limit < 1 || $limit > 50 ? 10 : $limit);
-
-        # Filter parameters
-        $order = $request->get('order', 'asc');
-        $order = (!is_string($order) || !in_array(strtolower($order), ['asc', 'desc']) ? 'asc' : $order);
-        $term = $request->get('term');
-
-        $sports = $repository->getSports($offset, $limit, $order, $term);
-
-        $response = new Response(
-            $serializer->serialize($sports, 'json', ['groups' => 'read']),
-            Response::HTTP_OK,
-            ['Content-Type' => 'application/json']
-        );
-
-        return $response->setPublic()
-            ->setExpires(new \DateTime('+3 minutes'))
-            ->setEtag('Sports_' . $offset . $limit . $order . $term)
-        ;
-    }
-
     /**
      * @Route("/{id}",
      *     name="show",
