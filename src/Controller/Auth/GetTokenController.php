@@ -4,17 +4,16 @@ namespace App\Controller\Auth;
 
 use LogicException;
 use Nelmio\ApiDocBundle\Annotation\Security;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use OpenApi\Annotations as OA;
 
-class GetTokenController extends AbstractController
+class GetTokenController
 {
     /**
      * @Route(
      *     "/api/login",
-     *     name="api_auth_login",
-     *     methods={"POST"}
+     *     name = "api_auth_login",
+     *     methods = {"POST"}
      * )
      *
      * @OA\Response(
@@ -40,19 +39,19 @@ class GetTokenController extends AbstractController
      * @OA\RequestBody(
      *     description = "User credentials",
      *     @OA\JsonContent(
- *             @OA\Property(
- *                 property = "username",
- *                 description = "The username",
- *                 type = "string",
+     *         @OA\Property(
+     *             property = "username",
+     *             description = "The username",
+     *             type = "string",
      *             example = "_username_"
- *             ),
- *             @OA\Property(
- *                 property = "password",
- *                 description = "The user's password",
- *                 type = "string",
- *                 format = "password",
+     *         ),
+     *         @OA\Property(
+     *             property = "password",
+     *             description = "The user's password",
+     *             type = "string",
+     *             format = "password",
      *             example = "_password_"
- *             )
+     *         )
      *     )
      * )
      * @OA\Tag(name="Authentication")
