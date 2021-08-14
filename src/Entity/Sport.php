@@ -31,7 +31,7 @@ class Sport
 
     /**
      * @ORM\Column(type="string", length=60, unique=true)
-     * @Groups({"read"})
+     * @Groups({"read", "edit"})
      *
      * @Assert\NotBlank(
      *     message = "The label cannot be blank"
