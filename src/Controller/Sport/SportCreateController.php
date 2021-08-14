@@ -9,13 +9,13 @@ use Nelmio\ApiDocBundle\Annotation\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 
-class SportEditController
+class SportCreateController
 {
     public function __construct(
         private SerializerInterface $serializer,
@@ -23,10 +23,10 @@ class SportEditController
 
     /**
      * @Route(
-     *     "/api/sports/{id}",
-     *     name = "api_sport_edit",
+     *     "/api/sports",
+     *     name = "api_sport_create",
      *     requirements = {"id" = "\d+"},
-     *     methods = {"PUT"}
+     *     methods = {"POST"}
      * )
      *
      * @OA\RequestBody(
@@ -35,8 +35,8 @@ class SportEditController
      *     @Model(type=Sport::class, groups={"write"})
      * )
      * @OA\Response(
-     *     response = 200,
-     *     description = "Returns the modified sport",
+     *     response = 201,
+     *     description = "Returns the new sport",
      *     @Model(type=Sport::class, groups={"read"})
      * )
      * @OA\Response(
@@ -50,30 +50,22 @@ class SportEditController
      *     @OA\JsonContent(example = {"code": 401, "message": "JWT Token not found"})
      * )
      * @OA\Response(
-     *     response = 404,
-     *     description = "Sport not found",
-     *     @OA\JsonContent(example = {"code": 404, "message": "The sport you are looking for does not exist"})
-     * )
-     * @OA\Response(
      *     response = 405,
      *     description = "Method not allowed",
-     *     @OA\JsonContent(example = {"code": 405, "message": "No route found: Method Not Allowed (Allow: PUT)"})
+     *     @OA\JsonContent(example = {"code": 405, "message": "No route found: Method Not Allowed (Allow: POST)"})
      * )
      * @OA\Tag(name="Sport")
      * @Security(name="Bearer")
      */
-    public function __invoke(Request $request, Sport $sport = null): Response
+    public function __invoke(Request $request): Response
     {
-        if (!$sport) {
-            throw new NotFoundHttpException('The sport you are looking for does not exist');
-        }
-
         try {
             $body = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
         } catch (\JsonException $e) {
             throw new BadRequestHttpException('Invalid JSON in request body');
         }
 
+        $sport = new Sport();
         $sportForm = $this->createForm(SportType::class, $sport);
         $sportForm->submit($body);
 
@@ -81,14 +73,22 @@ class SportEditController
             throw new ResourceValidationException($sportForm->getErrors(true));
         }
 
-        $sport->setUpdatedAt(new \DateTime());
+        $sport->setCreatedAt(new \DateTime());
         $manager = $this->getDoctrine()->getManager();
+        $manager->persist($sport);
         $manager->flush();
 
         return new Response(
             $this->serializer->serialize($sport, 'json'),
-            Response::HTTP_OK,
-            ['Content-Type' => 'application/json']
+            Response::HTTP_CREATED,
+            [
+                'location' => $this->generateUrl(
+                    'api_sport_show',
+                    ['id' => $sport->getId()],
+                    UrlGeneratorInterface::ABSOLUTE_URL
+                ),
+                'Content-Type' => 'application/json',
+            ]
         );
     }
 }
