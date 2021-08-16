@@ -4,10 +4,8 @@ namespace App\Controller\Sport;
 
 use App\Entity\Sport;
 use App\Exception\ResourceValidationException;
-use App\Form\SportType;
 use Doctrine\ORM\EntityManagerInterface;
 use Nelmio\ApiDocBundle\Annotation\Security;
-use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -16,13 +14,14 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class SportEditController
 {
     public function __construct(
         private SerializerInterface $serializer,
-        private FormFactoryInterface $formFactory,
         private EntityManagerInterface $manager,
+        private ValidatorInterface $validator,
     ) {}
 
     /**
@@ -78,14 +77,20 @@ class SportEditController
             throw new BadRequestHttpException('Invalid JSON in request body');
         }
 
-        $sportForm = $this->formFactory->create(SportType::class, $sport);
-        $sportForm->submit($body);
+        $sport->setLabel($body['label'] ?? null)
+            ->setUpdatedAt(new \DateTime())
+        ;
 
-        if (!$sportForm->isValid()) {
-            throw new ResourceValidationException($sportForm->getErrors(true));
+        $constraintErrors = $this->validator->validate($sport);
+        if (count($constraintErrors) > 0) {
+            $errorMessages = [];
+            foreach ($constraintErrors as $error) {
+                $errorMessages[] = $error->getMessage();
+            }
+
+            throw new ResourceValidationException(implode('; ', $errorMessages));
         }
 
-        $sport->setUpdatedAt(new \DateTime());
         $this->manager->flush();
 
         return new Response(
