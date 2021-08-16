@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Tests\Controller;
+namespace App\Tests\Controller\Auth;
 
 use App\DataFixtures\Providers\UserProvider;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class SecurityControllerTest extends WebTestCase
+class GetTokenControllerTest extends WebTestCase
 {
     private ?KernelBrowser $client;
 
