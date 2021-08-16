@@ -5,7 +5,9 @@ namespace App\Controller\Sport;
 use App\Entity\Sport;
 use App\Exception\ResourceValidationException;
 use App\Form\SportType;
+use Doctrine\ORM\EntityManagerInterface;
 use Nelmio\ApiDocBundle\Annotation\Security;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -19,6 +21,9 @@ class SportCreateController
 {
     public function __construct(
         private SerializerInterface $serializer,
+        private FormFactoryInterface $formFactory,
+        private EntityManagerInterface $manager,
+        private UrlGeneratorInterface $urlGenerator,
     ) {}
 
     /**
@@ -66,23 +71,21 @@ class SportCreateController
         }
 
         $sport = new Sport();
-        $sportForm = $this->createForm(SportType::class, $sport);
+        $sportForm = $this->formFactory->create(SportType::class, $sport);
         $sportForm->submit($body);
 
         if (!$sportForm->isValid()) {
             throw new ResourceValidationException($sportForm->getErrors(true));
         }
 
-        $sport->setCreatedAt(new \DateTime());
-        $manager = $this->getDoctrine()->getManager();
-        $manager->persist($sport);
-        $manager->flush();
+        $this->manager->persist($sport);
+        $this->manager->flush();
 
         return new Response(
             $this->serializer->serialize($sport, 'json'),
             Response::HTTP_CREATED,
             [
-                'location' => $this->generateUrl(
+                'location' => $this->urlGenerator->generate(
                     'api_sport_show',
                     ['id' => $sport->getId()],
                     UrlGeneratorInterface::ABSOLUTE_URL
