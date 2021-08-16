@@ -162,38 +162,6 @@ class SportControllerTest extends WebTestCase
         self::assertTrue($this->client->getResponse()->isClientError());
     }
 
-    public function testSportCreation(): void
-    {
-        $newSportLabel = 'brandNewLabel';
-        $this->client->request(
-            'POST',
-            '/api/sports',
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json'],
-            json_encode([
-                'label' => $newSportLabel,
-            ])
-        );
-        $sport = json_decode($this->client->getResponse()->getContent(), true);
-
-        self::assertEquals(201, $this->client->getResponse()->getStatusCode());
-        self::assertEquals($newSportLabel, $sport['label']);
-    }
-
-    public function testSportCreationWithMissingLabel(): void
-    {
-        $this->client->request(
-            'POST',
-            '/api/sports',
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json']
-        );
-
-        self::assertTrue($this->client->getResponse()->isClientError());
-    }
-
     public function testSportDeletion(): void
     {
         $sport = $this->entityManager
