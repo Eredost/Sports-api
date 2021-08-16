@@ -4,24 +4,25 @@ namespace App\Controller\Sport;
 
 use App\Entity\Sport;
 use App\Exception\ResourceValidationException;
-use App\Form\SportType;
 use Doctrine\ORM\EntityManagerInterface;
 use Nelmio\ApiDocBundle\Annotation\Security;
-use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class SportCreateController
 {
     public function __construct(
         private SerializerInterface $serializer,
-        private FormFactoryInterface $formFactory,
+        private DenormalizerInterface $denormalizer,
+        private ValidatorInterface $validator,
         private EntityManagerInterface $manager,
         private UrlGeneratorInterface $urlGenerator,
     ) {}
@@ -70,12 +71,16 @@ class SportCreateController
             throw new BadRequestHttpException('Invalid JSON in request body');
         }
 
-        $sport = new Sport();
-        $sportForm = $this->formFactory->create(SportType::class, $sport);
-        $sportForm->submit($body);
+        $sport = $this->denormalizer->denormalize($body, Sport::class, null, ['groups' => 'write']);
 
-        if (!$sportForm->isValid()) {
-            throw new ResourceValidationException($sportForm->getErrors(true));
+        $constraintErrors = $this->validator->validate($sport);
+        if (count($constraintErrors) > 0) {
+            $errorMessages = [];
+            foreach ($constraintErrors as $error) {
+                $errorMessages[] = $error->getMessage();
+            }
+
+            throw new ResourceValidationException(implode('; ', $errorMessages));
         }
 
         $this->manager->persist($sport);
