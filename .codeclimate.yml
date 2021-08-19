@@ -1,6 +1,11 @@
 plugins:
   phpcodesniffer:
     enabled: true
+    checks:
+      Generic WhiteSpace ScopeIndent IncorrectExact:
+        enabled: false
+      Squiz WhiteSpace ScopeClosingBrace ContentBefore:
+        enabled: false
 
   markdownlint:
     enabled: true

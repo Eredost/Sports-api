@@ -29,6 +29,18 @@ class SportListControllerTest extends AbstractSportControllerTest
         self::assertCount(3, $sports);
     }
 
+    public function testSportListWithSearchTerm(): void
+    {
+        $route = $this->getRoute();
+        $this->client->request(
+            $route['method'],
+            $route['path'],
+            ['term' => 'hello-world']
+        );
+
+        self::assertTrue($this->client->getResponse()->isOk());
+    }
+
     public function testSportListWithInvalidParams(): void
     {
         $route = $this->getRoute();
