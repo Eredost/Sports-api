@@ -7,24 +7,21 @@ use Symfony\Component\HttpFoundation\Response;
 
 class SportCreateControllerTest extends AbstractSportControllerTest
 {
-    private const ROUTE_PATH = '/api/sports';
-    
-    private const HTTP_METHOD = Request::METHOD_POST;
-
     protected function getRoute(): array
     {
         return [
-            'method' => self::HTTP_METHOD,
-            'path'   => self::ROUTE_PATH,
+            'method' => Request::METHOD_POST,
+            'path'   => '/api/sports',
         ];
     }
 
     public function testSuccessfulSportCreation(): void
     {
+        $route = $this->getRoute();
         $newSportLabel = 'brandNewLabel';
         $this->client->request(
-            self::HTTP_METHOD,
-            self::ROUTE_PATH,
+            $route['method'],
+            $route['path'],
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -41,9 +38,10 @@ class SportCreateControllerTest extends AbstractSportControllerTest
 
     public function testCreationWithMissingLabel(): void
     {
+        $route = $this->getRoute();
         $this->client->request(
-            self::HTTP_METHOD,
-            self::ROUTE_PATH,
+            $route['method'],
+            $route['path'],
             [],
             [],
             ['CONTENT_TYPE' => 'application/json']
@@ -54,9 +52,10 @@ class SportCreateControllerTest extends AbstractSportControllerTest
     
     public function testCreationWithMalformedJSONBody(): void
     {
+        $route = $this->getRoute();
         $this->client->request(
-            self::HTTP_METHOD,
-            self::ROUTE_PATH,
+            $route['method'],
+            $route['path'],
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -71,9 +70,10 @@ class SportCreateControllerTest extends AbstractSportControllerTest
      */
     public function testCreationWithNotAllowedHTTPMethod($method): void
     {
+        $route = $this->getRoute();
         $this->client->request(
             $method,
-            self::ROUTE_PATH,
+            $route['path'],
             [],
             [],
             ['CONTENT_TYPE' => 'application/json']

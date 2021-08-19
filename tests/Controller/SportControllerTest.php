@@ -77,31 +77,6 @@ class SportControllerTest extends WebTestCase
         self::assertCount(10, $sports);
     }
 
-    public function testSportShow(): void
-    {
-        $sport = $this->entityManager
-            ->getRepository(Sport::class)
-            ->findOneBy([])
-        ;
-
-        $this->client->request(
-            'GET',
-            '/api/sports/' . $sport->getId()
-        );
-
-        self::assertTrue($this->client->getResponse()->isOk());
-    }
-
-    public function testSportShowWithNonExistentSport(): void
-    {
-        $this->client->request(
-            'POST',
-            '/api/sports/0'
-        );
-
-        self::assertTrue($this->client->getResponse()->isClientError());
-    }
-
     public function testSportEdit(): void
     {
         $originalSport = $this->entityManager
